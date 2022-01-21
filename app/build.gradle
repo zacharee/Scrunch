@@ -48,8 +48,6 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation "androidx.fragment:fragment-ktx:1.4.0"
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.2'
-    implementation "androidx.datastore:datastore:1.0.0"
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
