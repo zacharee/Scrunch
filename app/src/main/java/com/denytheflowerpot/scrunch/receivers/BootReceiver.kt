@@ -7,9 +7,8 @@ import android.util.Log
 import com.denytheflowerpot.scrunch.ScrunchApplication
 
 class BootReceiver : BroadcastReceiver() {
-
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("Scrunch", "BootReceiver received action ${intent.action}")
-        ScrunchApplication.instance.startServiceIfNeeded()
+        ScrunchApplication.instance.updateServiceState()
     }
 }

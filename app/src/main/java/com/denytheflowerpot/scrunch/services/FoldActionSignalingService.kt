@@ -13,13 +13,14 @@ class FoldActionSignalingService : Service() {
     private val notificationId = 4653
     private var currentFoldState: Int? = null
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent != null && intent.action == stopServiceAction) {
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        if (intent.action == stopServiceAction) {
+            (application as ScrunchApplication).settingsManager
+                .serviceStarted = false
             stopSelf()
-            return START_NOT_STICKY
         }
 
-        return START_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onCreate() {
@@ -31,6 +32,7 @@ class FoldActionSignalingService : Service() {
                 stopServiceAction
             )
         )
+
         FoldDetectionStrategy.instanceForThisDevice?.create(this) { state ->
             if (state == DEVICE_STATE_HALF_OPEN) {
                 //Currently ignoring this state.

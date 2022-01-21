@@ -3,16 +3,12 @@ package com.denytheflowerpot.scrunch.managers
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_IMMUTABLE
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.app.PendingIntent.*
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
-import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.denytheflowerpot.scrunch.R
 import com.denytheflowerpot.scrunch.ScrunchApplication
-import com.denytheflowerpot.scrunch.activities.MainActivity
 import com.denytheflowerpot.scrunch.services.FoldActionSignalingService
 
 class NotificationManager(private val context: Context) {
@@ -28,9 +24,10 @@ class NotificationManager(private val context: Context) {
     }
 
     fun generateNotification(stopAction: String): Notification? {
-        (context as? ScrunchApplication)?.getServiceIntent(false)?.let {
-            val informMainActivityIntent = Intent(context, MainActivity::class.java).putExtra(stopAction, true)
-            val stopServicePendingIntent = PendingIntent.getActivity(context, 0, informMainActivityIntent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
+        (context as? ScrunchApplication)?.getServiceIntent()?.let {
+            it.action = FoldActionSignalingService.stopServiceAction
+            val stopServicePendingIntent = getForegroundService(context, 100, it, FLAG_MUTABLE or FLAG_UPDATE_CURRENT)
+
             return NotificationCompat.Builder(context, channel.id)
                 .setContentTitle(context.getText(R.string.notif_title))
                 .setStyle(NotificationCompat.BigTextStyle().bigText(context.getText(R.string.notif_content)))

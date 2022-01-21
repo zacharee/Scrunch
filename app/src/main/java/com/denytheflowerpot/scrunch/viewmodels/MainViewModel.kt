@@ -67,8 +67,9 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
         if (serviceStarted.value != started) {
             serviceStarted.value = started
             settingsManager.serviceStarted = started
+
             val app = getApplication<ScrunchApplication>()
-            app.startForegroundService(app.getServiceIntent(started))
+            app.updateServiceState()
         }
     }
 

@@ -1,9 +1,7 @@
 package com.denytheflowerpot.scrunch
 
-import android.Manifest
 import android.app.Application
 import android.content.Intent
-import android.content.pm.PackageManager
 import com.denytheflowerpot.scrunch.managers.NotificationManager
 import com.denytheflowerpot.scrunch.managers.SettingsManager
 import com.denytheflowerpot.scrunch.managers.SoundPlaybackManager
@@ -27,21 +25,19 @@ class ScrunchApplication: Application() {
 
         instance = this
         soundPlaybackManager.loadPreviousSounds()
-        startServiceIfNeeded()
+        updateServiceState()
     }
 
-    fun startServiceIfNeeded() {
+    fun updateServiceState() {
         if (settingsManager.serviceStarted && !PermissionUtils.needsToGrantReadLogs(this)) {
-            startForegroundService(getServiceIntent(true))
+            startForegroundService(getServiceIntent())
+        } else {
+            stopService(getServiceIntent())
         }
     }
 
-    fun getServiceIntent(start: Boolean): Intent {
-        val i = Intent(this, FoldActionSignalingService::class.java)
-        if (!start) {
-            i.action = FoldActionSignalingService.stopServiceAction
-        }
-        return i
+    fun getServiceIntent(): Intent {
+        return Intent(this, FoldActionSignalingService::class.java)
     }
 
     companion object {

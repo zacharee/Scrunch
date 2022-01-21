@@ -2,21 +2,37 @@ package com.denytheflowerpot.scrunch.managers
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.SharedPreferencesMigration
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.denytheflowerpot.scrunch.ScrunchApplication
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 
 class SettingsManager(private val context: Context) {
     private class Keys {
         companion object {
-            public val UnfoldSoundURL = "unfoldSoundURL"
-            public val FoldSoundURL = "foldSoundURL"
-            public val ServiceStarted = "serviceStarted"
-            public val Volume = "volume"
+            val UnfoldSoundURL = "unfoldSoundURL"
+            val FoldSoundURL = "foldSoundURL"
+            val ServiceStarted = "serviceStarted"
+            val Volume = "volume"
         }
     }
-    val prefs: SharedPreferences by lazy {
-        context.getSharedPreferences("${context.packageName}.PREFS", Context.MODE_PRIVATE)
-    }
+    val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+        name = "settings",
+        produceMigrations = {
+            listOf(
+                SharedPreferencesMigration(it, "${it.packageName}.PREFS")
+            )
+        }
+    )
+
+    val unfoldSoundURL: Flow<String>
+        get() =
+
     var unfoldSoundURL: String
+        get() = context.dataStore.data.collect {  }
         get() = prefs.getString(Keys.UnfoldSoundURL, "") ?: ""
         set(value) {
             prefs.edit().putString(Keys.UnfoldSoundURL, value).apply()
