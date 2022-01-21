@@ -1,6 +1,7 @@
 package com.denytheflowerpot.scrunch.viewmodels
 
 import android.app.Application
+import android.content.SharedPreferences
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
@@ -11,7 +12,7 @@ import com.denytheflowerpot.scrunch.managers.SettingsManager
 import com.denytheflowerpot.scrunch.managers.SoundPlaybackManager
 import com.denytheflowerpot.scrunch.util.PermissionUtils
 
-class MainViewModel(app: Application): AndroidViewModel(app) {
+class MainViewModel(app: Application): AndroidViewModel(app), SharedPreferences.OnSharedPreferenceChangeListener {
     private val foldSoundURL: MutableLiveData<Uri?> by lazy {
         MutableLiveData<Uri?>(Uri.parse(settingsManager.foldSoundURL))
     }
@@ -44,6 +45,24 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
     private val soundPlaybackManager: SoundPlaybackManager
         get() = getApplication<ScrunchApplication>().soundPlaybackManager
 
+    init {
+        settingsManager.prefs.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String) {
+        when (key) {
+            SettingsManager.Keys.ServiceStarted -> {
+                serviceStarted.value = settingsManager.serviceStarted
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        settingsManager.prefs.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
     fun setFoldSoundPath(path: Uri?) {
         if (path != null) {
             val p = path.toString()
@@ -51,7 +70,6 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
             soundPlaybackManager.loadFoldSound(p)
             foldSoundURL.value = path
         }
-
     }
 
     fun setUnfoldSoundPath(path: Uri?) {

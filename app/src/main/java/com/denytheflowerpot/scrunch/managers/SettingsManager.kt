@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class SettingsManager(private val context: Context) {
-    private class Keys {
+    class Keys {
         companion object {
             val UnfoldSoundURL = "unfoldSoundURL"
             val FoldSoundURL = "foldSoundURL"
